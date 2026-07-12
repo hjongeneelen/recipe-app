@@ -1,14 +1,18 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams, Navigate } from 'react-router-dom'
-import { getRecipeBySlug } from '../lib/recipes'
+import { getRecipeBySlug, localizeRecipe } from '../lib/recipes'
 import { scaleIngredientText } from '../lib/scaleText'
+import { useTranslation } from '../hooks/useLocale.jsx'
 import PortionScaler from '../components/PortionScaler.jsx'
 import CheckableItem from '../components/CheckableItem.jsx'
 import DarkModeToggle from '../components/DarkModeToggle.jsx'
+import LanguageSwitcher from '../components/LanguageSwitcher.jsx'
 
 export default function RecipeView() {
+  const { t, locale } = useTranslation()
   const { slug } = useParams()
-  const recipe = getRecipeBySlug(slug)
+  const baseRecipe = getRecipeBySlug(slug)
+  const recipe = baseRecipe && localizeRecipe(baseRecipe, locale)
 
   const [portions, setPortions] = useState(recipe?.portions || 4)
   const [checkedIngredients, setCheckedIngredients] = useState({})
@@ -37,9 +41,12 @@ export default function RecipeView() {
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
-          All recipes
+          {t('allRecipes')}
         </Link>
-        <DarkModeToggle />
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <DarkModeToggle />
+        </div>
       </header>
 
       <h1 className="text-2xl font-bold leading-tight text-charcoal-800 dark:text-cream-50 sm:text-3xl">
@@ -77,7 +84,7 @@ export default function RecipeView() {
       <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <section>
           <h2 className="mb-2 text-lg font-semibold text-terracotta-600 dark:text-terracotta-300">
-            Ingredients
+            {t('ingredients')}
           </h2>
           <ul className="card divide-y divide-cream-200 p-2 dark:divide-charcoal-700">
             {scaledIngredients.map((text, i) => (
@@ -94,7 +101,7 @@ export default function RecipeView() {
 
         <section>
           <h2 className="mb-2 text-lg font-semibold text-terracotta-600 dark:text-terracotta-300">
-            Preparation
+            {t('preparation')}
           </h2>
           <ol className="card flex flex-col gap-1 divide-y divide-cream-200 p-2 dark:divide-charcoal-700">
             {recipe.steps.map((text, i) => (

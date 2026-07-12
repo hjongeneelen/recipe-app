@@ -1,4 +1,8 @@
+import { useTranslation } from '../hooks/useLocale.jsx'
+
 export default function SearchBar({ value, onChange }) {
+  const { t } = useTranslation()
+
   return (
     <div className="relative">
       <svg
@@ -16,7 +20,7 @@ export default function SearchBar({ value, onChange }) {
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search recipes, ingredients..."
+        placeholder={t('searchPlaceholder')}
         className="w-full rounded-xl border border-cream-300 bg-cream-50 py-3 pl-10 pr-4 text-charcoal-800 placeholder-charcoal-300 shadow-sm focus:border-terracotta-400 focus:outline-none focus:ring-2 focus:ring-terracotta-200 dark:border-charcoal-600 dark:bg-charcoal-800 dark:text-cream-100 dark:placeholder-charcoal-300 dark:focus:ring-terracotta-700/40"
       />
     </div>

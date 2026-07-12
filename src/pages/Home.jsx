@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react'
-import { recipes, getAllTags } from '../lib/recipes'
+import { Link } from 'react-router-dom'
+import { recipes, getAllTags, localizeRecipe } from '../lib/recipes'
+import { useTranslation } from '../hooks/useLocale.jsx'
 import RecipeCard from '../components/RecipeCard.jsx'
 import SearchBar from '../components/SearchBar.jsx'
 import TagFilter from '../components/TagFilter.jsx'
 import DarkModeToggle from '../components/DarkModeToggle.jsx'
+import LanguageSwitcher from '../components/LanguageSwitcher.jsx'
 
 export default function Home() {
+  const { t, locale } = useTranslation()
   const [query, setQuery] = useState('')
   const [activeTags, setActiveTags] = useState([])
   const allTags = useMemo(getAllTags, [])
@@ -19,11 +23,12 @@ export default function Home() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
 
-    return recipes.filter((recipe) => {
-      const matchesTags = activeTags.every((tag) => recipe.tags.includes(tag))
+    return recipes.filter((baseRecipe) => {
+      const matchesTags = activeTags.every((tag) => baseRecipe.tags.includes(tag))
       if (!matchesTags) return false
       if (!q) return true
 
+      const recipe = localizeRecipe(baseRecipe, locale)
       const haystack = [
         recipe.title,
         recipe.description,
@@ -36,20 +41,56 @@ export default function Home() {
 
       return haystack.includes(q)
     })
-  }, [query, activeTags])
+  }, [query, activeTags, locale])
 
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-4 pb-16 pt-6">
-      <header className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-terracotta-600 dark:text-terracotta-300">
-            Kitchen Notebook
-          </h1>
-          <p className="text-sm text-charcoal-400 dark:text-charcoal-200">
-            {recipes.length} recipe{recipes.length === 1 ? '' : 's'} ready to cook
-          </p>
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="text-2xl leading-none" aria-hidden="true">
+            🍲
+          </span>
+          <div>
+            <h1 className="text-lg font-bold leading-tight text-terracotta-600 dark:text-terracotta-300">
+              Hugo's Kitchen Notebook
+            </h1>
+            <p className="text-xs text-charcoal-400 dark:text-charcoal-200">
+              {t('recipesReady', { count: recipes.length })}
+            </p>
+          </div>
         </div>
-        <DarkModeToggle />
+        <div className="flex items-center gap-2">
+          {import.meta.env.DEV && (
+            <Link
+              to="/editor"
+              title={t('editRecipes')}
+              aria-label={t('editRecipes')}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-terracotta-300/50 bg-cream-50 text-terracotta-600 shadow-sm transition hover:bg-cream-200 dark:border-charcoal-500 dark:bg-charcoal-700 dark:text-terracotta-300 dark:hover:bg-charcoal-600"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 21H6a2.25 2.25 0 01-2.25-2.25V6" />
+              </svg>
+            </Link>
+          )}
+          {import.meta.env.DEV && (
+            <Link
+              to="/fridge"
+              title="Fridge"
+              aria-label="Fridge"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-terracotta-300/50 bg-cream-50 text-terracotta-600 shadow-sm transition hover:bg-cream-200 dark:border-charcoal-500 dark:bg-charcoal-700 dark:text-terracotta-300 dark:hover:bg-charcoal-600"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+                <rect x="5" y="2.5" width="14" height="19" rx="2" />
+                <line x1="5" y1="10" x2="19" y2="10" />
+                <line x1="8" y1="5" x2="8" y2="7.5" />
+                <line x1="8" y1="13" x2="8" y2="15.5" />
+              </svg>
+            </Link>
+          )}
+          <LanguageSwitcher />
+          <DarkModeToggle />
+        </div>
       </header>
 
       <div className="mb-4">
@@ -67,7 +108,7 @@ export default function Home() {
 
         {filtered.length === 0 && (
           <p className="mt-10 text-center text-charcoal-300 dark:text-charcoal-400">
-            No recipes match your search. Try a different term or tag.
+            {t('noRecipesMatch')}
           </p>
         )}
       </div>

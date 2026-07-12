@@ -1,6 +1,8 @@
 import { findFlags } from '../lib/safetyFlags'
+import { useTranslation } from '../hooks/useLocale.jsx'
 
 export default function CheckableItem({ text, checked, onToggle, flagged = false }) {
+  const { t } = useTranslation()
   const flags = flagged ? findFlags(text) : []
 
   return (
@@ -24,7 +26,7 @@ export default function CheckableItem({ text, checked, onToggle, flagged = false
         </span>
         {flags.length > 0 && (
           <span
-            title={`Contains: ${flags.join(', ')}`}
+            title={t('contains', { flags: flags.join(', ') })}
             className="ml-auto shrink-0 text-terracotta-500 dark:text-terracotta-300"
           >
             ⚠️

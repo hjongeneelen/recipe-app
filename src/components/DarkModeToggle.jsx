@@ -1,13 +1,15 @@
 import { useDarkMode } from '../hooks/useDarkMode'
+import { useTranslation } from '../hooks/useLocale.jsx'
 
 export default function DarkModeToggle() {
   const [theme, toggle] = useDarkMode()
+  const { t } = useTranslation()
   const isDark = theme === 'dark'
 
   return (
     <button
       onClick={toggle}
-      aria-label="Toggle dark mode"
+      aria-label={t('toggleDarkMode')}
       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-terracotta-300/50 bg-cream-50 text-terracotta-600 shadow-sm transition hover:bg-cream-200 dark:border-charcoal-500 dark:bg-charcoal-700 dark:text-terracotta-300 dark:hover:bg-charcoal-600"
     >
       {isDark ? (
