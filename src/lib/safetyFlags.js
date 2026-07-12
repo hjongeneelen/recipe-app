@@ -2,7 +2,7 @@
 // a recipe — edit this list to match whatever you personally avoid.
 export const FLAGGED_INGREDIENTS = [
   { match: /aubergine|eggplant/i, label: 'aubergine' },
-  { match: /champignons?|mushrooms?/i, label: 'mushroom' },
+  { match: /champignons?|mushrooms?|paddenstoel\w*|pilz\w*/i, label: 'mushroom' },
   { match: /ricotta/i, label: 'ricotta' },
   { match: /feta/i, label: 'feta' },
   { match: /olijven|olives?/i, label: 'olive' },
